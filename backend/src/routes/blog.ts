@@ -137,10 +137,34 @@ blog.put('', async (c) => {
     });
 })
 
-blog.get(':id', (c) => {
-return c.text("get blog id API");
+blog.get('bulk', async (c) => {
+
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+    
+    
+    // console.log("Hello");
+    const allBlogs = await prisma.post.findMany();
+    // console.log(allBlogs);
+
+    return c.json(allBlogs);
 })
 
-blog.get('bulk', (c) => {
-return c.text("Get blogs bulk");
+blog.get(':id', async (c) => {
+
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const blogId = c.req.param('id');
+
+    const blogPost = await prisma.post.findUnique({
+        where: {
+            id: blogId
+        }
+    })
+
+    return c.json(blogPost);
 })
+
