@@ -39,12 +39,102 @@ blog.use('*', async (c, next) => {
       }
   });
 
-blog.post('', (c) => {
-return c.text("POST blog route");
+blog.post('', async (c) => {
+
+    interface Blog {
+        title: string,
+        content: string,
+        published: boolean
+    }
+
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const body: Blog = await c.req.json();
+    const title = body.title;
+    const content = body.content;
+    const published = body.published;
+
+    const id = c.get('userId');
+
+    const newBlog = await prisma.post.create({
+        data: {
+            title,
+            content,
+            published,
+            authorId: id,
+        }
+    })
+
+    return c.json({
+        id: newBlog.id
+    });
+
+// return c.text("POST blog route");
+
+
 })
 
-blog.put('', (c) => {
-return c.text("PUT blogg route");
+blog.put('', async (c) => {
+
+    interface Blog {
+        title: string,
+        content: string,
+        published: boolean,
+        blogId: string,
+    }
+
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const body: Blog = await c.req.json();
+    const blogId = body.blogId;
+    const title = body.title;
+    const content = body.content;
+    const published = body.published;
+
+    const id = c.get('userId');
+
+    // Check if current user is the owner of the blog
+    const blogInfo = await prisma.post.findUnique({
+        where: {
+            id: blogId
+        },
+        select: {
+            authorId: true,
+        }
+    })
+
+    if(blogInfo == null){
+        return c.json({
+            msg: "No blog exists with the given author id"
+        })
+    }
+
+    if(blogInfo.authorId !== id){
+        c.status(403);
+        return c.json({
+            msg: "You are not the owner of this blog",
+        });
+    }
+    
+
+    const updatedBlog = await prisma.post.update({
+        where: {
+            id: blogId
+        },
+        data: {
+            title,
+            content,
+            published,
+        }
+    })
+
+    return c.json({
+        id: updatedBlog.id
+    });
 })
 
 blog.get(':id', (c) => {
