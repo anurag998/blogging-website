@@ -17,8 +17,8 @@ exports.createBlogSchema = zod_1.z.object({
     published: zod_1.z.boolean().optional()
 });
 exports.updatedBlogSchema = zod_1.z.object({
-    id: zod_1.z.string(),
+    blogId: zod_1.z.string(),
     title: zod_1.z.string(),
     content: zod_1.z.string(),
-    published: zod_1.z.string().optional()
+    published: zod_1.z.boolean().optional()
 });

@@ -18,10 +18,10 @@ export const createBlogSchema = z.object({
 })
 
 export const updatedBlogSchema = z.object({
-  id: z.string(),
+  blogId: z.string(),
   title: z.string(),
   content: z.string(),
-  published: z.string().optional()
+  published: z.boolean().optional()
 })
 
 export type signupType = z.infer<typeof signupSchema>

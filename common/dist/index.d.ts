@@ -36,20 +36,20 @@ export declare const createBlogSchema: z.ZodObject<{
     published?: boolean | undefined;
 }>;
 export declare const updatedBlogSchema: z.ZodObject<{
-    id: z.ZodString;
+    blogId: z.ZodString;
     title: z.ZodString;
     content: z.ZodString;
-    published: z.ZodOptional<z.ZodString>;
+    published: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     title: string;
     content: string;
-    id: string;
-    published?: string | undefined;
+    blogId: string;
+    published?: boolean | undefined;
 }, {
     title: string;
     content: string;
-    id: string;
-    published?: string | undefined;
+    blogId: string;
+    published?: boolean | undefined;
 }>;
 export type signupType = z.infer<typeof signupSchema>;
 export type signinType = z.infer<typeof signinSchema>;
