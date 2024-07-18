@@ -2,7 +2,8 @@ import { Hono } from 'hono'
 
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
-import { decode, sign, verify } from 'hono/jwt'
+import { sign } from 'hono/jwt'
+import { signinSchema,signupSchema } from '@fate007/blog-common'
 
 export const user = new Hono<{
 	Bindings: {
@@ -18,9 +19,18 @@ user.post('signup', async (c) => {
 
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
   
     const body = await c.req.json();
+    const { success } = signupSchema.safeParse(body)
+
+    if(!success){
+      c.status(400);
+      return c.json({
+        msg: "Invalid inputs"
+      });
+    }
+
     const email = body.email;
     const password = body.password;
     const name = body.name;
@@ -52,6 +62,16 @@ user.post('signin', async (c) => {
     }).$extends(withAccelerate())
 
     const body = await c.req.json();
+
+    const { success } = signinSchema.safeParse(body);
+    console.log(success);
+
+    if(!success){
+      c.status(400);
+      return c.json({
+        msg: "Invalid inputs"
+      });
+    }
 
     const email = body.email;
     const password = body.password;

@@ -2,7 +2,8 @@ import { Hono } from 'hono'
 
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
-import { decode, sign, verify } from 'hono/jwt'
+import { verify } from 'hono/jwt'
+import { createBlogSchema, updatedBlogSchema } from '@fate007/blog-common'
 
 export const blog = new Hono<{
 	Bindings: {
@@ -15,7 +16,7 @@ export const blog = new Hono<{
 }>();
 
 
-blog.use('*', async (c, next) => {
+blog.use('', async (c, next) => {
   
     const jwt = c.req.header('Authorization') || "";
       const token = jwt.split(' ')[1];
@@ -49,9 +50,18 @@ blog.post('', async (c) => {
 
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
     const body: Blog = await c.req.json();
+    const { success } = createBlogSchema.safeParse(body);
+
+    if(!success){
+      c.status(400);
+      return c.json({
+        msg: "Invalid inputs"
+      });
+    }
+
     const title = body.title;
     const content = body.content;
     const published = body.published;
@@ -90,12 +100,23 @@ blog.put('', async (c) => {
     }).$extends(withAccelerate())
 
     const body: Blog = await c.req.json();
+    const { success } = updatedBlogSchema.safeParse(body);
+
+    if(!success){
+      c.status(400);
+      return c.json({
+        msg: "Invalid inputs"
+      });
+    }
+
     const blogId = body.blogId;
     const title = body.title;
     const content = body.content;
     const published = body.published;
 
     const id = c.get('userId');
+
+    console.log(`ID =  ${id}`);
 
     // Check if current user is the owner of the blog
     const blogInfo = await prisma.post.findUnique({
