@@ -49,7 +49,7 @@ export default function SignInComp(){
                                 if(postResp.data.msg == "Signin successful"){
                                     localStorage.setItem("token", postResp.token);
                                     console.log("Signed In");
-                                    navigate('/blog');
+                                    navigate('/blogs');
                                 }
                                 else{
                                     console.log("Try Again!");

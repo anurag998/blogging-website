@@ -6,9 +6,6 @@ import axios from "axios";
 
 const signinEndpoint = "http://localhost:8787/api/v1/user/signin"
 
-interface pageType{
-    page: string
-}
 
 export default function SignupComp(){
     const [inputs, setInputs] = useState<signupType>({
@@ -60,7 +57,7 @@ export default function SignupComp(){
                                 if(postResp.data.msg == "Signup Successful"){
                                     localStorage.setItem("token", postResp.token);
                                     console.log("Signed In");
-                                    navigate('/blog');
+                                    navigate('/blogs');
                                 }
                                 else{
                                     console.log("Try Again!");

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import SignIn from './pages/Signin'
 import SignUp from './pages/Signup'
 import Blog from './pages/Blog'
+import Blogs from './pages/Blogs'
 
 
 function App() {
@@ -15,6 +16,8 @@ function App() {
           <Route path = '/signin' element={<SignIn />} ></Route>
           <Route path = '/signup' element={<SignUp />}></Route>
           <Route path = '/blog/:id' element={<Blog />}></Route>
+          <Route path = '/blogs' element={<Blogs />}></Route>
+
         </Routes>
       </BrowserRouter>
     </>
