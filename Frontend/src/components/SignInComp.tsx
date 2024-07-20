@@ -1,14 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signinType } from "@fate007/blog-common";
 import LabeledInput from "./LabeledInput";
 import axios from "axios";
+
+const signinEndpoint = "http://localhost:8787/api/v1/user/signin"
 
 export default function SignInComp(){
     const [inputs, setInputs] = useState<signinType>({
         email: "",
         password: ""
     });
+    const navigate = useNavigate()
 
     return (
         <>
@@ -37,8 +40,21 @@ export default function SignInComp(){
                             });
                         }}></LabeledInput>
                         <div className="m-2 mt-4">
-                            <button className="w-96 p-2 bg-black text-white rounded-lg" onClick={()=> {
-                                const postResp = await axios.post("")
+                            <button className="w-96 p-2 bg-black text-white rounded-lg" onClick={async ()=> {
+                                console.log(inputs);
+                                const postResp:any = await axios.post(signinEndpoint, inputs);
+                                
+                                console.log(postResp);
+                                
+                                if(postResp.data.msg == "Signin successful"){
+                                    localStorage.setItem("token", postResp.token);
+                                    console.log("Signed In");
+                                    navigate('/blog');
+                                }
+                                else{
+                                    console.log("Try Again!");
+                                }
+
                             }}> Sign In</button>
                         </div>
                     </div>
@@ -48,6 +64,4 @@ export default function SignInComp(){
         </>
     );
 }
-
-
 

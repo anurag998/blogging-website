@@ -1,7 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signupType } from "@fate007/blog-common";
 import LabeledInput from "./LabeledInput";
+import axios from "axios";
+
+const signinEndpoint = "http://localhost:8787/api/v1/user/signin"
 
 interface pageType{
     page: string
@@ -13,6 +16,8 @@ export default function SignupComp(){
         email: "",
         password: ""
     });
+
+    const navigate = useNavigate()
 
     return (
         <>
@@ -46,7 +51,22 @@ export default function SignupComp(){
                             });
                         }}></LabeledInput>
                         <div className="m-2 mt-4">
-                            <button className="w-96 p-2 bg-black text-white rounded-lg"> Sign Up</button>
+                            <button className="w-96 p-2 bg-black text-white rounded-lg" onClick={async ()=> {
+                                console.log(inputs);
+                                const postResp:any = await axios.post(signinEndpoint, inputs);
+                                
+                                console.log(postResp);
+                                
+                                if(postResp.data.msg == "Signup Successful"){
+                                    localStorage.setItem("token", postResp.token);
+                                    console.log("Signed In");
+                                    navigate('/blog');
+                                }
+                                else{
+                                    console.log("Try Again!");
+                                }
+
+                            }}> Sign Up</button>
                         </div>
                     </div>
                 </div>
